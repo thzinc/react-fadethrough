@@ -125,27 +125,37 @@ var Fadethrough = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Fadethrough.__proto__ || Object.getPrototypeOf(Fadethrough)).call(this, props));
 
-    var activeIndex = 0;
-    var interval = _this.props.interval || 3000;
-
     _this.state = {
-      activeIndex: activeIndex,
-      interval: interval
+      activeIndex: 0
     };
 
     _this.next = _this.next.bind(_this);
+    _this.getInterval = _this.getInterval.bind(_this);
     return _this;
   }
 
   _createClass(Fadethrough, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.interval = setInterval(this.next, this.state.interval);
+      this.intervalHandle = setInterval(this.next, this.getInterval());
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps) {
+      if (this.props.interval !== prevProps.interval) {
+        clearInterval(this.intervalHandle);
+        this.intervalHandle = setInterval(this.next, this.getInterval());
+      }
     }
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      clearInterval(this.state.interval);
+      clearInterval(this.intervalHandle);
+    }
+  }, {
+    key: 'getInterval',
+    value: function getInterval() {
+      return this.props.interval || 3000;
     }
   }, {
     key: 'next',
@@ -154,7 +164,6 @@ var Fadethrough = function (_Component) {
       this.setState(function (prevState) {
         return { activeIndex: i || 0 };
       });
-      console.log(i);
     }
   }, {
     key: 'render',

@@ -5,26 +5,37 @@ export default class Fadethrough extends Component {
   constructor(props) {
     super(props)
 
-    const activeIndex = 0
-    const interval = this.props.interval || 3000
-
     this.state = {
-      activeIndex,
-      interval
+      activeIndex: 0
     }
 
     this.next = this.next.bind(this)
+    this.getInterval = this.getInterval.bind(this)
   }
 
   componentDidMount() {
-    this.interval = setInterval(
+    this.intervalHandle = setInterval(
       this.next,
-      this.state.interval
+      this.getInterval()
     )
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.interval !== prevProps.interval) {
+      clearInterval(this.intervalHandle)
+      this.intervalHandle = setInterval(
+        this.next,
+        this.getInterval()
+      )
+    }
+  }
+
   componentWillUnmount() {
-    clearInterval(this.state.interval)
+    clearInterval(this.intervalHandle)
+  }
+
+  getInterval() {
+    return this.props.interval || 3000
   }
 
   next() {
